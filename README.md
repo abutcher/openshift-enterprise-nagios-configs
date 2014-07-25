@@ -18,9 +18,10 @@ To install this policy, run the following command from the directory it lives in
 make -f /usr/share/selinux/devel/Makefile ose-node.pp; semodule -i ose-node.pp
 ```
 
-###Plugin context
+###Plugin files & context
 
-Plugin files should be dropped in `/usr/lib64/nagios/plugins/extra/` and will need `nagios_openshift_plugin_exec_t`.
+Plugin files should be dropped in `/usr/lib64/nagios/plugins/extra/`
+and will need their selinux type set.
 
 ```
 chcon -t nagios_openshift_plugin_exec_t /usr/lib64/nagios/plugins/extra/*
@@ -28,8 +29,8 @@ chcon -t nagios_openshift_plugin_exec_t /usr/lib64/nagios/plugins/extra/*
 
 ##Sudoers
 
-Some of these check commands need to run commands using sudo so we've
-given nrpe permission to do so in cases where there's little risk.
+Some of these check commands need to run with sudo so we've given nrpe
+permission to do so in cases where there's little risk.
 
 You'll need to make sure that sudoers is configured to not require a
 tty or a visible password.
@@ -57,7 +58,7 @@ Requires configuring sudoers. See Sudoers section above.
 
 Checks for `PASS` result from oo-accept-broker -v, returns verbose output.
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_broker_accept_status]=/usr/lib64/nagios/plugins/extra/check_broker_accept_status
@@ -81,7 +82,7 @@ Requires configuring sudoers. See Sudoers section above.
 
 Checks for `PASS` result from oo-accept-node -v, returns verbose output.
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_node_accept_status]=/usr/lib64/nagios/plugins/extra/check_node_accept_status
@@ -109,7 +110,7 @@ Checks capacity output of `oo-admin-ctl-district`.
 
 Returns CRITICAL if available capacity under 25%.
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_system_capacity]=/usr/lib64/nagios/plugins/extra/check_system_capacity
@@ -130,7 +131,7 @@ define service {
 
 ##check_selinux_status (ruby)
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_system_capacity]=/usr/lib64/nagios/plugins/extra/check_system_capacity
@@ -152,7 +153,7 @@ define service {
 
 Ensure `mcollectived` running w/ generic `check_procs` call.
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_mcollective]=/usr/lib64/nagios/plugins/check_procs -C ruby -a mcollectived -c 1:1
@@ -174,7 +175,7 @@ define service {
 
 Ensure `cgrulesengd` running w/ generic `check_procs` call.
 
-###`/etc/nagios/nrpe.cfg` entry
+###Nrpe config entry
 
 ```
 command[check_cgroups]=/usr/lib64/nagios/plugins/check_procs -C cgrulesengd -a cgred -c 1:1
