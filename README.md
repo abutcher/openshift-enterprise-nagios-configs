@@ -192,3 +192,76 @@ define service {
     check_command               check_nrpe_command!check_cgroups
     }
 ```
+
+#Service definitions
+
+The `oo-accept*` commands can take a while to run so as to not stress out systems, we run it every 5 mins per `normal_check_interval`.
+
+```
+define service {
+    name                            generic-service
+    active_checks_enabled           1
+    passive_checks_enabled          1
+    parallelize_check               1
+    obsess_over_service             1
+    check_freshness                 0
+    notifications_enabled           1
+    event_handler_enabled           1
+    flap_detection_enabled          1
+    process_perf_data               1
+    retain_status_information       1
+    retain_nonstatus_information    1
+    is_volatile                     0
+    check_period                    24x7
+    max_check_attempts              3
+    normal_check_interval           3
+    retry_check_interval            1
+    notification_interval           60
+    notification_period             24x7
+}
+
+define service {
+    name                            slow-service
+    active_checks_enabled           1
+    passive_checks_enabled          1
+    parallelize_check               1
+    obsess_over_service             1
+    check_freshness                 0
+    notifications_enabled           1
+    event_handler_enabled           1
+    flap_detection_enabled          1
+    process_perf_data               1
+    retain_status_information       1
+    retain_nonstatus_information    1
+    is_volatile                     0
+    check_period                    24x7
+    max_check_attempts              3
+    normal_check_interval           5
+    retry_check_interval            3
+    notification_interval           60
+    notification_period             24x7
+}
+```
+
+#Nrpe Config
+
+Again, since we have some slow running service definitions for those pesky slow check commands, we have an amped up connection and command timeout.
+
+`/etc/nagios/nrpe.cfg` tweaks:
+
+```
+# COMMAND TIMEOUT
+# This specifies the maximum number of seconds that the NRPE daemon will
+# allow plugins to finish executing before killing them off.
+
+command_timeout=240
+
+# CONNECTION TIMEOUT
+# This specifies the maximum number of seconds that the NRPE daemon will
+# wait for a connection to be established before exiting. This is sometimes
+# seen where a network problem stops the SSL being established even though
+# all network sessions are connected. This causes the nrpe daemons to
+# accumulate, eating system resources. Do not set this too low.
+
+connection_timeout=300
+```
