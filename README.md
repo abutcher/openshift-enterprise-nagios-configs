@@ -109,7 +109,15 @@ Requires configuring sudoers. See Sudoers section above.
 
 Depends: python-simplejson
 
-Checks capacity output of `oo-admin-ctl-district`.
+Checks capacity output of `oo-admin-ctl-district`. Like this:
+
+```
+{...
+ "available_capacity"=>5978,
+ "max_capacity"=>6000,
+ ...}
+
+```
 
 Returns CRITICAL if available capacity under 25%.
 
