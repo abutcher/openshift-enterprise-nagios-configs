@@ -52,7 +52,7 @@ Add the following to `/etc/sudoers`.
 
 ```
 nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-accept-broker
-nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-admin-ctl-district
+nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-admin-ctl-district -b
 ```
 
 ##check_broker_accept_status (bash)

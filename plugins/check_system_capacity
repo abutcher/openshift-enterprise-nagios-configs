@@ -6,7 +6,7 @@ import re
 import sys
 
 lines=[]
-for line in os.popen("sudo oo-admin-ctl-district").readlines():
+for line in os.popen("sudo oo-admin-ctl-district -b").readlines():
     lines.append(line.strip())
 
 datas = "".join(lines).replace('=>',': ').split('}{')
