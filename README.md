@@ -36,7 +36,7 @@ Some of these check commands need to run with sudo so we've given nrpe
 permission to do so in cases where there's little risk.
 
 You'll need to make sure that sudoers is configured to not require a
-tty or a visible password.
+tty.
 
 ###Node
 
