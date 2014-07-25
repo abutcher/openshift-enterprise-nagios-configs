@@ -19,6 +19,8 @@ To install this policy, run the following command from the directory
 make -f /usr/share/selinux/devel/Makefile ose-node.pp; semodule -i ose-node.pp
 ```
 
+Note: Using RHEL 6.5 here (just incase something doesn't work)
+
 ###Plugin files & context
 
 Plugin files should be dropped in `/usr/lib64/nagios/plugins/extra/`
