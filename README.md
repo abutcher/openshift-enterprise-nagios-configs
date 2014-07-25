@@ -195,7 +195,9 @@ define service {
 
 #Service definitions
 
-The `oo-accept*` commands can take a while to run so as to not stress out systems, we run it every 5 mins per `normal_check_interval`.
+The `oo-accept-*` commands can take a while to run so we don't run
+them as often and have a `slow-service` that gets checked on a 5 min
+interval rather than 3.
 
 ```
 define service {
@@ -245,7 +247,9 @@ define service {
 
 #Nrpe Config
 
-Again, since we have some slow running service definitions for those pesky slow check commands, we have an amped up connection and command timeout.
+Again, since we have some slow running service definitions for those
+pesky slow check commands, we have an amped up connection and command
+timeout.
 
 `/etc/nagios/nrpe.cfg` tweaks:
 
