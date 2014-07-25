@@ -134,10 +134,12 @@ define service {
 
 ##check_selinux_status (ruby)
 
+Ensures selinux is enabled.
+
 ###Nrpe config entry
 
 ```
-command[check_system_capacity]=/usr/lib64/nagios/plugins/extra/check_system_capacity
+command[check_selinux_status]=/usr/lib64/nagios/plugins/extra/check_selinux_status --warning permissive --critical disabled
 ```
 
 ###Service definition
