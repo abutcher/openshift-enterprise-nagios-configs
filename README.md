@@ -56,7 +56,7 @@ nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-admin-ctl-district
 
 Requires configuring sudoers. See Sudoers section above.
 
-Checks for `PASS` result from oo-accept-broker -v, returns verbose output.
+Checks for `PASS` result from `oo-accept-broker -v`, returns verbose output.
 
 ###Nrpe config entry
 
@@ -80,7 +80,7 @@ define service {
 
 Requires configuring sudoers. See Sudoers section above.
 
-Checks for `PASS` result from oo-accept-node -v, returns verbose output.
+Checks for `PASS` result from `oo-accept-node -v`, returns verbose output.
 
 ###Nrpe config entry
 
