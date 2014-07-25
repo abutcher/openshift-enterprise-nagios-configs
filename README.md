@@ -13,7 +13,8 @@ In the `selinux` folder of this repo is some source for an `ose-node`
 selinux module. This sets up our `nagios_openshift_plugin_exec_t` type
 and tells selinux that it's cool.
 
-To install this policy, run the following command from the directory it lives in:
+To install this policy, run the following command from the directory
+`ose-node.te` lives in:
 ```
 make -f /usr/share/selinux/devel/Makefile ose-node.pp; semodule -i ose-node.pp
 ```
