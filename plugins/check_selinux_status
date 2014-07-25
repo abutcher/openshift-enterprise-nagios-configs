@@ -1,0 +1,50 @@
+#!/usr/bin/ruby
+
+require 'getoptlong'
+
+$nagios_ok=0
+$nagios_warning=1
+$nagios_critical=2
+
+if __FILE__ == $0
+  opts = GetoptLong.new(
+    ["--warning", GetoptLong::REQUIRED_ARGUMENT],
+    ["--critical", GetoptLong::REQUIRED_ARGUMENT]
+  )
+
+  opt = {}
+  opts.each do |o, a|
+    opt[o[2..-1]] = a.to_s
+  end
+
+  unless (opt['warning'] or opt['critical'])
+    puts $0
+    puts "  --warning        generate warning if selinux's current status is set to this"
+    puts "  --critical       generate critical if selinux's current status is set to this"
+    exit 3
+  end
+
+  warning=opt['warning']
+  critical=opt['critical']
+
+  cmd = %x[sestatus].split(/\n/)
+  split = cmd[2].match(/^Current mode:(.*)$/)
+  currentMode = split[1].strip
+
+  # Check criticals first
+  if critical != nil and currentMode == critical
+  then
+    puts "CRITICAL: selinux's current mode = #{currentMode}"
+    exit $nagios_critical
+  end
+
+  # Check warnings next
+  if warning != nil and currentMode == warning
+  then
+    puts "WARNING: selinux's current mode = #{currentMode}"
+    exit $nagios_warning
+  end
+
+  puts "OK: selinux's current mode = #{currentMode}"
+  exit $nagios_ok  # ensure we return success to nagios
+end

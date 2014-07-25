@@ -1,0 +1,14 @@
+#!/bin/bash
+
+PASS=$(/usr/bin/sudo /usr/sbin/oo-accept-broker 2>&1 | grep "PASS")
+
+if [ "$PASS" == "PASS" ]; then
+  echo "NODE OK"
+  /usr/bin/sudo /usr/sbin/oo-accept-broker -v
+  exit 0
+else
+  echo "Node no longer accepted, please verify"
+  /usr/bin/sudo /usr/sbin/oo-accept-broker -v
+  echo "After call"
+  exit 2
+fi

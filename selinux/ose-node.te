@@ -1,0 +1,44 @@
+policy_module(ose-node,1.3)
+
+########################################
+#
+# Declarations
+#
+
+require{
+	attribute nagios_plugin_domain;
+}
+
+nagios_plugin_template(openshift)
+
+type nagios_openshift_plugin_tmp_t;
+files_tmp_file(nagios_openshift_plugin_tmp_t)
+
+########################################
+#
+# openshift nagios plugin local policy
+#
+
+allow nagios_openshift_plugin_t self:capability { setuid sys_nice sys_resource sys_ptrace setgid audit_write };
+
+manage_dirs_pattern(nagios_openshift_plugin_t, nagios_openshift_plugin_tmp_t, nagios_openshift_plugin_tmp_t)
+manage_files_pattern(nagios_openshift_plugin_t, nagios_openshift_plugin_tmp_t, nagios_openshift_plugin_tmp_t)
+files_tmp_filetrans(nagios_openshift_plugin_t, nagios_openshift_plugin_tmp_t, { file dir })
+
+corecmd_exec_bin(nagios_openshift_plugin_t)
+corecmd_exec_shell(nagios_openshift_plugin_t)
+
+domain_read_all_domains_state(nagios_openshift_plugin_t)
+
+init_domtrans_script(nagios_openshift_plugin_t)
+init_initrc_domain(nagios_openshift_plugin_t)
+
+optional_policy(`
+	sudo_exec(nagios_openshift_plugin_t)
+')
+
+optional_policy(`
+	sysnet_exec_ifconfig(nagios_openshift_plugin_t)
+')
+
+unconfined_domain_noaudit(nagios_openshift_plugin_t)

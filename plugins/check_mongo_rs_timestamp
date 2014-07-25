@@ -1,0 +1,109 @@
+#!/usr/bin/ruby
+
+require 'rubygems'
+require 'mongo'
+require 'getoptlong'
+
+
+# Configurable params
+$config = {
+  # Mongo params
+  :host       => "{{ inventory_hostname }}",
+  :port       => 27017,
+  :user       => "{{ mongo_adminro_user_real }}",
+  :password   => "{{ mongo_adminro_pw_real }}",
+  :db         => "admin",
+  :collection => "user"
+}
+
+tmpOptions = GetoptLong.new(
+    ["--verbose", "-v", GetoptLong::NO_ARGUMENT]
+)
+
+options = {}
+tmpOptions.each do |opt, arg|
+    options[opt[2..-1]] = arg.to_s
+end
+
+verbose = options["verbose"].nil? ? false : true
+
+def mongo_connect
+  con = Mongo::ReplSetConnection.new("#{$config[:host]}:#{$config[:port]}")
+  admin_db = con.db("admin")
+  admin_db.authenticate($config[:user], $config[:password])
+  return admin_db
+  #$coll = con.db($config[:db]).collection($config[:collection])
+end
+
+  #Do database connect
+  begin
+    db = mongo_connect
+    server_status = db.command('serverStatus' => 1)
+    if verbose
+      puts "*************************************************************************"
+      puts "\t\tServer Status for #{server_status['host']}:"
+      puts "\t\t           Process : #{server_status['process']}"
+      puts "\t\t            Uptime : #{server_status['uptime']}"
+      puts "\t\t          Mem bits : #{server_status['mem']['bits']}"
+      puts "\t\t      Mem resident : #{server_status['mem']['resident']}"
+      puts "\t\t       Mem virtual : #{server_status['mem']['virtual']}"
+      puts "\t\t        Mem mapped : #{server_status['mem']['mapped']}"
+      puts "\t\t Mem mappedWiJourn : #{server_status['mem']['mappedWithJournal']}"
+  #bits resident virtual supported mapped mappedWithJournal
+      puts "*************************************************************************"
+      puts
+    end
+
+    attempts = 5
+    status_messages = []
+    hosts = []
+    master_name=nil
+    master_time=nil
+    err_msg = []
+    begin
+        #Get all replicas optimes
+        #Make sure they are all syncing or within a tolerance
+        master_name=nil
+        status = db.command('replSetGetStatus' => 1)
+        optimes = {}
+        status_messages = []
+        hosts = []
+        err_msg = {}
+        status["members"].each { |rs_set_member|
+            optimes[rs_set_member["name"]] = rs_set_member['optime'].seconds
+            err_msg[rs_set_member["name"]] = rs_set_member['errmsg'] if rs_set_member.has_key?"errmsg"
+            if rs_set_member["stateStr"] == "PRIMARY"
+                master_name = rs_set_member["name"]
+                master_time = rs_set_member['optime'].seconds if master_time.nil?
+            end
+        }
+        optimes.each { |name,optime|
+            next if optime >= master_time
+            status_messages << "Server [#{name}]  optime [#{optime}] Err: [#{err_msg[name]}]"
+            hosts << "#{name}: (errmsg: #{err_msg[name]})"
+            raise "Time mismatch"
+        }
+    rescue => e
+        attempts -= 1
+        if attempts > 0
+            sleep 5
+            retry
+        end
+    end
+
+    if status_messages.length == 0
+      puts "OK: All nodes (total: #{status["members"].length}) are in sync [#{master_time}]"
+      exit(0) #SUCCESS
+    else
+      if verbose
+         status_messages.each { |msg| puts msg }
+      end
+      puts "CRITICAL: #{hosts} are out of sync. check replicset optime"
+      exit(2) #FAILURE MSG HERE FOR NAGIOS
+    end
+  rescue => e
+    puts "UNKOWN FAILURE: #{e.message}"
+    exit(9)
+  end
+
+__END__
