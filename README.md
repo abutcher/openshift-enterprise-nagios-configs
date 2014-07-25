@@ -99,7 +99,7 @@ define service {
     service_description         ACCEPT-NODE-STATUS
     host_name                   [HOSTNAME]
     contact_groups              [CONTACT-GROUP]
-    check_command               check_nrpe_command!check_accept_node_status
+    check_command               check_nrpe_command!check_node_accept_status
     }
 ```
 
