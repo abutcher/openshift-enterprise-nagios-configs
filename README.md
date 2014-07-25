@@ -196,6 +196,62 @@ define service {
     }
 ```
 
+##check_mongo_rs_status (ruby)
+
+Requires configuring `$config` section of the plugin script to set
+host, port, etc.
+
+Depends: rubygems, rubygem-mongo
+
+Checks mongo replicaset status. EX: OK: All nodes (total: 3) are up and healthy
+
+###Nrpe config entry
+
+```
+command[check_mongo_rs_status]=/usr/lib64/nagios/plugins/extra/check_mongo_rs_status
+```
+
+###Service definition
+
+```
+define service {
+    use                         generic-service
+    service_description         MONGO-RS-STATUS
+    host_name                   [HOSTNAME]
+    contact_groups              [CONTACT-GROUP]
+    check_command               check_nrpe_command!check_mongo_rs_status
+    }
+
+```
+
+##check_mongo_rs_timestamp (ruby)
+
+Requires configuring `$config` section of the plugin script to set
+host, port, etc.
+
+Depends: rubygems, rubygem-mongo
+
+Checks mongo replicaset timestamp. EX. OK: All nodes (total: 3) are in sync [1406318347]
+
+###Nrpe config entry
+
+```
+command[check_mongo_rs_timestamp]=/usr/lib64/nagios/plugins/extra/check_mongo_rs_timestamp
+```
+
+###Service definition
+
+```
+define service {
+    use                         generic-service
+    service_description         MONGO-RS-TIMESTAMP
+    host_name                   [HOSTNAME]
+    contact_groups              [CONTACT-GROUP]
+    check_command               check_nrpe_command!check_mongo_rs_timestamp
+    }
+
+```
+
 #Service definitions
 
 The `oo-accept-*` commands can take a while to run so we don't run
