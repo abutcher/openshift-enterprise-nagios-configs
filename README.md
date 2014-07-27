@@ -3,11 +3,9 @@ openshift-enterprise-nagios-configs
 
 Some configuration for doing simple Nagios monitoring of Openshift Enterprise.
 
-#Plugins
+#Selinux Module & Context
 
-##Selinux Module & Context
-
-###ose-node policy
+##ose-node policy
 
 In the `selinux` folder of this repo is some source for an `ose-node`
 selinux module. This sets up our `nagios_openshift_plugin_exec_t` type
@@ -21,7 +19,7 @@ make -f /usr/share/selinux/devel/Makefile ose-node.pp; semodule -i ose-node.pp
 
 Note: Using RHEL 6.5 here (just incase something doesn't work)
 
-###Plugin files & context
+##Plugin files & context
 
 Plugin files should be dropped in `/usr/lib64/nagios/plugins/extra/`
 and will need their selinux type set.
@@ -30,7 +28,7 @@ and will need their selinux type set.
 chcon -t nagios_openshift_plugin_exec_t /usr/lib64/nagios/plugins/extra/*
 ```
 
-##Sudoers
+#Sudoers
 
 Some of these check commands need to run with sudo so we've given nrpe
 permission to do so in cases where there's little risk.
@@ -38,7 +36,7 @@ permission to do so in cases where there's little risk.
 You'll need to make sure that sudoers is configured to not require a
 tty.
 
-###Node
+##Node
 
 Add the following to `/etc/sudoers`
 
@@ -46,7 +44,7 @@ Add the following to `/etc/sudoers`
 nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-accept-node
 ```
 
-###Broker
+##Broker
 
 Add the following to `/etc/sudoers`.
 
@@ -54,6 +52,8 @@ Add the following to `/etc/sudoers`.
 nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-accept-broker
 nrpe    ALL=(ALL) NOPASSWD: /usr/sbin/oo-admin-ctl-district -b
 ```
+
+#Plugins
 
 ##check_broker_accept_status (bash)
 
